@@ -6,7 +6,12 @@ export default class Slide {
         
         this.wrapper = document.querySelector( configuration.getSelector( 'component', wrapper ) );
         this.list    = this.wrapper.querySelector( configuration.getSelector( 'component', list ) );
-        console.log( this.wrapper, this.list )
+        
+        this.events = {
+            start : [ 'mousedown', 'touchstart' ],
+            move  : [ 'mousemove', 'touchmove' ],
+            end   : [ 'mouseup', 'touchend' ]
+        };
 
         this.data = {
             start     : 0,
@@ -21,8 +26,13 @@ export default class Slide {
 
         if ( this.wrapper !== undefined ) {
 
-            this.wrapper.addEventListener( 'mousedown', this.start );
-            this.wrapper.addEventListener( 'mouseup', this.stop );
+            this.events.start.forEach( ( event ) => {
+                this.wrapper.addEventListener( event, this.start );
+            } );
+
+            this.events.end.forEach( ( event ) => {
+                this.wrapper.addEventListener( event, this.stop );
+            } );
         }
     }
 
@@ -35,20 +45,36 @@ export default class Slide {
 
     start( event ) {
 
-        event.preventDefault();
-
         this.data.start = event.clientX;
-        this.wrapper.addEventListener( 'mousemove', this.move );
+
+        if ( event.type === 'mousedown' ) {
+            event.preventDefault();            
+        }
+        else {
+            this.data.start = event.changedTouches[ 0 ].clientX;
+        }
+
+        this.events.move.forEach( ( event ) => {
+            this.wrapper.addEventListener( event, this.move );
+        } );
+
+        
     }
 
     move( event ) {
 
+        let clientX = event.clientX;
+
+        if ( event.type === 'touchmove' ) {
+            clientX = event.changedTouches[ 0 ].clientX;
+        }
+
         this.place( 
-            this.update( event.clientX ) );
+            this.update( clientX ) );
     }
 
     place( position ) {
-        
+
         this.data.current = position;
         this.list.style.transform = `translate3d(${position}px, 0, 0)`;
     }
@@ -60,10 +86,10 @@ export default class Slide {
 
     stop( event ) {
 
+        this.events.move.forEach( ( event ) => {
+            this.wrapper.removeEventListener( event, this.move );
+        } );
         
-        this.wrapper.removeEventListener( 'mousemove', this.move );
         this.data.end = this.data.current;
-
-        console.log( this.data );
     }
 }
