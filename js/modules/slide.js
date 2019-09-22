@@ -1,5 +1,5 @@
 import configuration from './configuration.js';
-
+import Events        from  './events.js';
 export default class Slide {
 
     constructor( wrapper, list ) {
@@ -30,19 +30,9 @@ export default class Slide {
     }
 
     initialize() {
-
+        
         this.bindings();
-    
-        this.items = [ ...this.list.children ].map( ( item ) => {
-
-            const position = -( item.offsetLeft - ( ( this.wrapper.offsetWidth - item.offsetWidth ) / 2 ) );
-
-            return {
-                item,
-                position
-            }
-        } );
-
+        
         if ( this.wrapper !== undefined ) {
 
             this.events.start.forEach( ( event ) => {
@@ -53,15 +43,32 @@ export default class Slide {
                 this.wrapper.addEventListener( event, this.stop );
             } );
 
+            window.addEventListener( 'resize', this.resize );
+
+            this.store();
             this.center();
         }
     }
 
+    store() {
+
+        this.items = [ ...this.list.children ].map( ( item ) => {
+
+            const position = -( item.offsetLeft - ( ( this.wrapper.offsetWidth - item.offsetWidth ) / 2 ) );
+
+            return {
+                item,
+                position
+            }
+        } );
+    }
+
     bindings() {
         
-        this.start = this.start.bind( this );
-        this.move = this.move.bind( this );
-        this.stop = this.stop.bind( this );
+        this.start  = this.start.bind( this );
+        this.move   = this.move.bind( this );
+        this.stop   = this.stop.bind( this );        
+        this.resize = Events.debounce( this.resize.bind( this ), 200 );
     }
 
     start( event ) {
@@ -131,6 +138,10 @@ export default class Slide {
         
         this.animate( true );
 
+        if ( this.current ) {
+            this.current.item.classList.remove( configuration.getClass( 'active' ) );
+        }
+
         const position = this.data.position.movement;
 
         if ( position < 100 && ( this.data.indexes.previous !== undefined ) ) {
@@ -142,6 +153,8 @@ export default class Slide {
         else {
             this.slide( this.data.indexes.current );
         }
+
+        this.current.item.classList.add( configuration.getClass( 'active' ) );
     }
 
     update( position ) {
@@ -162,5 +175,14 @@ export default class Slide {
 
     animate( a ) {
         this.list.style.transition = ( a ? 'transform .2s' : '' );
+    }
+
+    resize() {
+        console.log('aaa');
+        setTimeout( () => {
+
+            this.store();
+            this.slide( this.data.indexes.current );
+        }, 550 );
     }
 }
