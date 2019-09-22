@@ -52,6 +52,8 @@ export default class Slide {
             this.events.end.forEach( ( event ) => {
                 this.wrapper.addEventListener( event, this.stop );
             } );
+
+            this.center();
         }
     }
 
@@ -77,7 +79,7 @@ export default class Slide {
             this.wrapper.addEventListener( event, this.move );
         } );
 
-        
+        this.animate( false );
     }
 
     move( event ) {
@@ -88,20 +90,35 @@ export default class Slide {
             clientX = event.changedTouches[ 0 ].clientX;
         }
 
-        this.place( 
-            this.update( clientX ) );
+        const position = this.update( clientX );
+
+        this.place( position );
     }
 
     slide( index ) {
         
-        this.data.indexes.previous = ( index ? ( index - 1 ) : index );
+        this.data.indexes.previous = ( index ? ( index - 1 ) : undefined );
         this.data.indexes.current  = index;
-        this.data.indexes.next     = ( index === ( this.items.length - 1 ) ? index : ( index + 1 ) );
+        this.data.indexes.next     = ( index === ( this.items.length - 1 ) ? undefined : ( index + 1 ) );
 
         this.current = this.items[ index ];
         this.data.position.end = this.current.position;
 
         this.place( this.current.position );
+    }
+
+    previous() {
+
+        if ( this.data.indexes.previous !== undefined ) {
+            this.slide( this.data.indexes.previous );
+        }
+    }
+
+    next() {
+
+        if ( this.data.indexes.next !== undefined ) {
+            this.slide( this.data.indexes.next );
+        }
     }
 
     place( position ) {
@@ -110,9 +127,26 @@ export default class Slide {
         this.list.style.transform = `translate3d(${position}px, 0, 0)`;
     }
 
+    center() {
+        
+        this.animate( true );
+
+        const position = this.data.position.movement;
+
+        if ( position < 100 && ( this.data.indexes.previous !== undefined ) ) {
+            this.previous();
+        }
+        else if ( position > -100 && ( this.data.indexes.next !== undefined ) ) {
+            this.next();
+        }
+        else {
+            this.slide( this.data.indexes.current );
+        }
+    }
+
     update( position ) {
-        this.data.position.current = ( this.data.position.start - position ) * 1.6;
-        return ( this.data.position.end - this.data.position.current );
+        this.data.position.movement = ( this.data.position.start - position ) * 1.6;
+        return ( this.data.position.end - this.data.position.movement );
     }
 
     stop( event ) {
@@ -122,5 +156,11 @@ export default class Slide {
         } );
         
         this.data.position.end = this.data.position.current;
+
+        this.center();
+    }
+
+    animate( a ) {
+        this.list.style.transition = ( a ? 'transform .2s' : '' );
     }
 }
