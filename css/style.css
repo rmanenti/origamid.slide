@@ -1,0 +1,32 @@
+body {
+    margin: 0;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+img {
+    display: block;
+    max-width: 100%;
+}
+
+[data-ui-component="slide"] {
+    overflow: hidden;
+}
+
+[data-ui-component="slide"] [data-ui-component="slide-list"] {
+    display: flex;
+}
+
+[data-ui-component="slide"] [data-ui-component="slide-list"] [data-ui-component="slide-item"] {
+
+    flex-shrink: 0;
+
+    width: 80vw;
+    max-width: 800px;
+
+    margin: 0 2rem;
+}
