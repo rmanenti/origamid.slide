@@ -13,6 +13,62 @@ img {
     max-width: 100%;
 }
 
+[data-ui-component="slide-pagination"] {
+    display: flex;
+    justify-content: center;
+}
+
+[data-ui-component="slide-pagination"] li a {
+
+    display: block;
+
+    position: relative;
+
+    width: 2.5rem;
+    height: 2.5rem;
+
+    background: silver;
+    border-radius: 50%;
+
+    overflow: hidden;
+
+    text-indent: -999px;
+
+    margin: .5rem;
+}
+
+[data-ui-component="slide-pagination"] li {
+
+    opacity: .75;
+    transform: scale( .75 );
+
+    transition: opacity .4s, transform .4s;
+}
+
+[data-ui-component="slide-pagination"] li.is-active {
+
+    opacity: 1;
+    transform: scale( 1 );
+}
+
+[data-ui-component="slide-pagination"] li.is-active a,
+[data-ui-component="slide-pagination"] li a:hover {
+    transition: all .4s linear;
+    box-shadow: 0px 0px 0px .25rem rgba(255, 136, 0, 0.75);
+}
+
+[data-ui-component="slide-pagination"] li.is-active a:before,
+[data-ui-component="slide-pagination"] li a:hover:before {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 136, 0, 0.25);
+}
+
 [data-ui-component="slide"] {
     overflow: hidden;
 }
@@ -50,4 +106,57 @@ img {
     opacity: 1;    
     transform: scale( 1 );
 
+}
+
+nav {
+    width: 100%;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+nav button {
+    
+    font-weight: bold;
+    justify-content: center;
+
+    width: 2.5rem;
+    height: 2.5rem;
+
+    border-radius: 50%;
+
+
+    background: #fff;
+    border: none;
+    box-shadow: 0px 5px 10px -5px rgba(0,0,0,0.75);
+    color: rgba(0,0,0,0.5);
+
+    transition: box-shadow .4s, color .4s, background-color .4s;
+}
+
+nav button:hover {
+
+    background: rgba(255, 136, 0, .75);    
+    color: #fff;
+}
+
+nav button:active {
+    box-shadow: inset 0px 5px 10px -5px rgba(0,0,0,0.75);
+}
+
+nav button:first-child::after {
+
+    content: '<';
+    font-size: 1.5rem;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 100;
+}
+
+nav button:last-child:after {
+
+    content: '>';
+    font-size: 1.5rem;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 100;
 }
